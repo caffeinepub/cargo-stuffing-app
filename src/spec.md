@@ -1,12 +1,15 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the LoadSummary component data display and 3D container layout rendering issues in the Cargo Load Planner application.
+**Goal:** Fix the state update flow so that adding cargo items updates the LoadSummary and renders boxes in the 3D layout.
 
 **Planned changes:**
-- Debug and fix LoadSummary component to correctly display load statistics (volume utilization, total weight, item counts) for placed cargo items
-- Debug and fix Container3DView component to properly render the 3D canvas with container wireframe and cargo boxes
-- Add defensive null checks and error handling in App.tsx for state initialization and prop passing
-- Verify LayerSummary component correctly calculates and displays layer information from placed cargo items
+- Debug and fix state updates in App.tsx handleAddCargo to ensure cargoItems state changes trigger re-renders
+- Verify unique ID generation and proper initialization of position properties for new cargo items
+- Fix LoadSummary to correctly receive and display statistics for all cargo items
+- Debug Container3DView to render CargoBox3D components for placed items
+- Verify onDrop handler updates cargo item positions and triggers state updates via onUpdateItem
+- Add console logging throughout cargo addition and placement flow for debugging
+- Check and fix any React state mutation issues by ensuring immutable update patterns
 
-**User-visible outcome:** Users will see accurate load statistics in the summary panel and a working 3D visualization showing the container and placed cargo boxes with proper labeling and layer information.
+**User-visible outcome:** Users can add multiple cargo items via the form, see updated statistics in LoadSummary, and see 3D boxes render when items are dragged into the container view.

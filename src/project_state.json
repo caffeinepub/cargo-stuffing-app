@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 15,
+  "projectStateVersion": 17,
   "summary": "Web-based cargo loading planner with 3D visualization, container selection, and cargo management capabilities inspired by EasyCargo3D and Pier2Pier LoadCalc",
   "architectural_notes": [
     "Web application (not native Android app) accessible via browser on mobile devices",
@@ -11,7 +11,7 @@
   ],
   "known_issues": [
     "React Three Fiber error: 'Div is not part of the THREE namespace' - incorrect component usage in 3D canvas context",
-    "Version 6 deployment: Load summary data not loading and layout plan with boxes not showing in 3D view"
+    "Version 7 deployment: Adding multiple cargo items does not update the Load Summary or render boxes in the 3D layout view"
   ],
   "isFixRequest": true,
   "existing_features": [
@@ -228,6 +228,62 @@
       "title": "Verify that the LayerSummary component correctly calculates and displays layer information from placed cargo items. Ensure layering.ts utility functions properly group items by Y-coordinate and generate accurate box counts per layer.",
       "reqIds": [
         "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-state-update-flow-in-app-tsx-to-ensure-that-when-cargo-items-are-added-via-cargoform-the-cargoitems-state-updates-correctly-and-triggers-re-renders-in-loadsummary-and-container3dview-components",
+      "title": "Debug and fix the state update flow in App.tsx to ensure that when cargo items are added via CargoForm, the cargoItems state updates correctly and triggers re-renders in LoadSummary and Container3DView components.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-and-fix-the-handleaddcargo-function-in-app-tsx-to-ensure-new-cargo-items-are-correctly-appended-to-the-cargoitems-state-array-with-unique-ids-and-proper-initialization-of-position-properties",
+      "title": "Verify and fix the handleAddCargo function in App.tsx to ensure new cargo items are correctly appended to the cargoItems state array with unique IDs and proper initialization of position properties.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-loadsummary-component-to-correctly-receive-and-display-statistics-for-all-cargo-items-in-the-cargoitems-prop-calculating-total-volume-weight-and-item-counts-even-when-items-are-not-yet-placed-in-the-3d-container",
+      "title": "Fix the LoadSummary component to correctly receive and display statistics for all cargo items in the cargoItems prop, calculating total volume, weight, and item counts even when items are not yet placed in the 3D container.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-the-container3dview-component-to-ensure-it-receives-the-updated-cargoitems-array-and-renders-cargobox3d-components-for-each-placed-item-when-users-drag-items-from-cargolist-into-the-3d-scene",
+      "title": "Debug the Container3DView component to ensure it receives the updated cargoItems array and renders CargoBox3D components for each placed item when users drag items from CargoList into the 3D scene.",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-ondrop-handler-in-container3dview-correctly-updates-the-cargo-item-s-position-property-and-triggers-a-state-update-in-app-tsx-via-the-onupdateitem-callback-when-an-item-is-placed",
+      "title": "Verify that the onDrop handler in Container3DView correctly updates the cargo item's position property and triggers a state update in App.tsx via the onUpdateItem callback when an item is placed.",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-detailed-console-logging-throughout-the-cargo-addition-and-placement-flow-to-track-state-changes-log-when-items-are-added-in-handleaddcargo-when-cargoitems-prop-changes-in-loadsummary-and-container3dview-and-when-items-are-placed-via-ondrop",
+      "title": "Add detailed console logging throughout the cargo addition and placement flow to track state changes: log when items are added in handleAddCargo, when cargoItems prop changes in LoadSummary and Container3DView, and when items are placed via onDrop.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-check-for-react-state-mutation-issues-in-app-tsx-by-ensuring-all-state-updates-use-immutable-patterns-spreading-arrays-creating-new-objects-rather-than-mutating-existing-state-objects-directly",
+      "title": "Check for React state mutation issues in App.tsx by ensuring all state updates use immutable patterns (spreading arrays, creating new objects) rather than mutating existing state objects directly.",
+      "reqIds": [
+        "REQ-35"
       ],
       "version": 1
     }

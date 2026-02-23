@@ -1,4 +1,3 @@
-// Form component for adding cargo items
 import { useState } from 'react';
 import { CargoItem, UnitType } from '../types/cargo';
 import { Button } from '@/components/ui/button';
@@ -9,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 
 interface CargoFormProps {
-  onAddCargo: (cargo: Omit<CargoItem, 'id'>) => void;
+  onAddCargo: (cargo: Omit<CargoItem, 'id' | 'isPlaced' | 'position'>) => void;
 }
 
 export function CargoForm({ onAddCargo }: CargoFormProps) {
@@ -43,9 +42,19 @@ export function CargoForm({ onAddCargo }: CargoFormProps) {
       weightNum <= 0 ||
       quantityNum <= 0
     ) {
+      console.warn('Form validation failed');
       return;
     }
 
+    console.log('=== CargoForm Submit ===');
+    console.log('Creating cargo item:', {
+      name: name.trim(),
+      dimensions: `${lengthNum}x${widthNum}x${heightNum} ${unit}`,
+      weight: weightNum,
+      quantity: quantityNum
+    });
+
+    // Create cargo item without id, isPlaced, or position (parent will add these)
     onAddCargo({
       name: name.trim(),
       length: lengthNum,
@@ -63,6 +72,8 @@ export function CargoForm({ onAddCargo }: CargoFormProps) {
     setHeight('');
     setWeight('');
     setQuantity('1');
+    
+    console.log('Form reset complete');
   };
 
   return (

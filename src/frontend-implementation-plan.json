@@ -1,108 +1,178 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix load summary data loading and 3D layout rendering issues",
+  "title": "Fix load summary and 3D box rendering after adding multiple cargo items",
   "requirements": [
     {
-      "id": "REQ-25",
-      "summary": "Debug and fix LoadSummary component to correctly display load statistics for placed cargo items",
+      "id": "REQ-29",
+      "summary": "Debug and fix the state update flow in App.tsx to ensure cargo items added via CargoForm trigger re-renders in LoadSummary and Container3DView",
       "acceptanceCriteria": [
-        "LoadSummary component renders and displays current load statistics",
-        "Volume utilization percentage is calculated and shown correctly",
-        "Total weight and item counts reflect placed cargo items",
-        "Progress bar displays appropriate color-coded warnings for capacity"
+        "Adding cargo items via the CargoForm updates the cargoItems state array in App.tsx",
+        "State changes propagate to LoadSummary and Container3DView components",
+        "Console logs in App.tsx confirm state updates when items are added"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Review and enhance the handleAddCargo function to ensure immutable state updates using spread operators. Add comprehensive console logging to track state changes when cargo items are added. Verify that the cargoItems state setter is called correctly and triggers component re-renders. Ensure the state update follows React best practices by creating new array references rather than mutating existing state."
+        },
+        {
+          "path": "frontend/src/components/LoadSummary.tsx",
+          "operation": "modify",
+          "description": "Add useEffect hook with console logging to track when the cargoItems prop changes. Log the received prop value, array length, and trigger re-render confirmation. Verify that the component receives updated props from App.tsx and recalculates statistics accordingly."
+        },
+        {
+          "path": "frontend/src/components/Container3DView.tsx",
+          "operation": "modify",
+          "description": "Add useEffect hook with console logging to track when the cargoItems prop changes in the 3D view. Log the number of items received, how many have positions defined, and confirm the component is re-rendering with updated data. Verify that CargoBox3D child components are created for items with defined positions."
+        }
+      ]
+    },
+    {
+      "id": "REQ-30",
+      "summary": "Verify and fix the handleAddCargo function to ensure new cargo items receive unique IDs and proper position initialization",
+      "acceptanceCriteria": [
+        "Each added cargo item receives a unique ID",
+        "New items are initialized with position: undefined to mark them as unplaced",
+        "Multiple items can be added sequentially without state corruption"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Review the handleAddCargo function implementation to ensure unique ID generation (using Date.now() or crypto.randomUUID()). Verify that new cargo items are initialized with position: undefined to mark them as unplaced. Ensure the function creates a new array reference using the spread operator [...cargoItems, newItem] rather than mutating the existing array. Add console logging to output the newly created item structure and the updated array length."
+        },
+        {
+          "path": "frontend/src/types/cargo.ts",
+          "operation": "modify",
+          "description": "Review the CargoItem type definition to ensure the position property is correctly typed as optional (Position | undefined). Verify that all required properties are present and properly typed for successful item creation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-31",
+      "summary": "Fix LoadSummary to correctly display statistics for all cargo items including unplaced items",
+      "acceptanceCriteria": [
+        "LoadSummary displays total cargo volume from all items in cargoItems array",
+        "Volume utilization shows 0% when no items are placed",
+        "Total weight and item count reflect all added cargo items",
+        "Component re-renders when cargoItems prop changes"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/LoadSummary.tsx",
           "operation": "modify",
-          "description": "Add defensive null checks for placedItems prop and ensure calculations.ts functions are called with valid data. Add console.log statements to debug data flow and verify that volume utilization, total weight, and item counts are calculated correctly from the placed items array."
+          "description": "Review the component logic to ensure it calculates statistics from the full cargoItems prop, not just placed items. Add separate calculations for total cargo (all items) vs placed cargo (items with positions). Display total item count alongside placed item count. Update volume utilization to show percentage of placed items relative to container capacity. Add console logging to show calculation results and confirm the component receives updated props."
         },
         {
           "path": "frontend/src/utils/calculations.ts",
           "operation": "modify",
-          "description": "Review and verify calculateVolumeUtilization, calculateTotalWeight, and getPlacedItems functions handle edge cases correctly. Add defensive checks for undefined or empty arrays and ensure calculations return valid numbers even when no items are placed."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify that placedItems state is correctly passed to LoadSummary component and that the state updates properly when cargo items are placed. Add console logging to track placedItems state changes and ensure LoadSummary receives fresh data on every update."
+          "description": "Review utility functions to ensure they correctly handle both placed and unplaced items. Verify that calculateTotalVolume and calculateTotalWeight work with the full cargoItems array. Ensure getPlacedItems correctly filters items with defined positions. Add any missing utility functions needed to support separate calculations for all items vs placed items only."
         }
       ]
     },
     {
-      "id": "REQ-26",
-      "summary": "Debug and fix Container3DView component to ensure 3D canvas renders container wireframe and placed cargo boxes",
+      "id": "REQ-32",
+      "summary": "Debug Container3DView to ensure it renders CargoBox3D components for all placed items",
       "acceptanceCriteria": [
-        "3D container wireframe displays correctly in the canvas",
-        "Placed cargo boxes render as 3D meshes with proper dimensions and colors",
-        "Box labels with layer-wise numbering are visible on cargo items",
-        "No React Three Fiber or WebGL errors appear in the console"
+        "Container3DView receives updated cargoItems prop after items are added",
+        "CargoBox3D components render for items with defined position property",
+        "Dragging an unplaced item into the 3D view creates a visible box mesh",
+        "Console logs confirm CargoBox3D rendering is attempted"
       ],
       "file_operations": [
         {
           "path": "frontend/src/components/Container3DView.tsx",
           "operation": "modify",
-          "description": "Add error boundary wrapping around Canvas component if not present, verify Canvas initialization props are correct, and add console.log statements to confirm placedItems are received by the component. Check that the container wireframe mesh is rendering with correct dimensions and that CargoBox3D components are instantiated for each placed item."
+          "description": "Review the component render logic to ensure it maps over cargoItems and creates CargoBox3D components for items with defined positions. Add useEffect hook to log when cargoItems prop changes, including the number of items and how many have positions. Verify that the filter logic correctly identifies placed items (those with position !== undefined). Add console logging inside the map function to confirm CargoBox3D components are being rendered with correct props."
         },
         {
           "path": "frontend/src/components/CargoBox3D.tsx",
           "operation": "modify",
-          "description": "Add defensive null checks for item prop and verify mesh geometry is created with valid dimensions. Ensure the component renders correctly even with minimal data and add console logging to confirm each cargo box is being instantiated. Verify that CargoBoxLabel is rendered and positioned correctly above each box."
-        },
-        {
-          "path": "frontend/src/components/Canvas3DFallback.tsx",
-          "operation": "modify",
-          "description": "Enhance fallback component to display more specific error messages if WebGL initialization fails or if React Three Fiber encounters issues. Add troubleshooting tips for common 3D rendering problems including browser compatibility and GPU acceleration settings."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Verify that selectedContainer and placedItems state are correctly passed to Container3DView component. Add console logging to confirm state updates trigger re-renders of the 3D view. Ensure that when cargo items are placed, the placedItems array is updated immediately and Container3DView receives the new data."
+          "description": "Add console logging at the component entry point to confirm the component is being instantiated with correct item data. Log the item ID, dimensions, and position to verify props are being passed correctly. Ensure the mesh rendering logic uses the position prop to place the box in 3D space. Verify that the component re-renders when item props change."
         }
       ]
     },
     {
-      "id": "REQ-27",
-      "summary": "Add defensive null checks and error handling in App.tsx to ensure state is properly initialized and passed to child components",
+      "id": "REQ-33",
+      "summary": "Verify that the onDrop handler updates cargo item position and triggers state update via onUpdateItem callback",
       "acceptanceCriteria": [
-        "App.tsx initializes all required state variables with safe default values",
-        "LoadSummary and Container3DView receive valid props even when state is empty",
-        "Console logs confirm state is being updated when cargo items are placed",
-        "No undefined or null reference errors occur during initial render"
+        "Dropping a cargo item in the 3D view calls onUpdateItem with the new position",
+        "App.tsx updates the cargoItems state with the new position",
+        "The placed item becomes visible as a 3D box in the container",
+        "LoadSummary recalculates to include the newly placed item"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Container3DView.tsx",
+          "operation": "modify",
+          "description": "Review the onDrop or drag handling logic to ensure it correctly calculates the new position when a cargo item is placed. Verify that the onUpdateItem callback is invoked with the item ID and the new position object. Add console logging to track when onDrop is triggered, the calculated position, and confirm the callback is being called. Ensure position validation occurs before calling onUpdateItem."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Review the onUpdateItem or handleUpdateCargo function to ensure it creates a new cargoItems array with the updated item position using immutable patterns. Use map to create a new array, updating only the target item by ID. Verify the new array reference triggers React re-renders. Add console logging to show when the function is called, which item is being updated, the new position, and the resulting state array."
+        },
+        {
+          "path": "frontend/src/utils/placement.ts",
+          "operation": "modify",
+          "description": "Review placement validation functions to ensure they correctly validate positions without side effects. Verify that isValidPlacement checks for container boundary violations and collisions with existing items. Ensure validation functions are pure and do not mutate state. Add console logging if needed to track validation results during placement operations."
+        }
+      ]
+    },
+    {
+      "id": "REQ-34",
+      "summary": "Add detailed console logging throughout the cargo addition and placement flow for debugging",
+      "acceptanceCriteria": [
+        "Console logs show cargo items being added to state",
+        "Console logs show prop updates in LoadSummary",
+        "Console logs show prop updates in Container3DView",
+        "Console logs show placement operations and position updates",
+        "Logs include item IDs and counts for easy debugging"
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add defensive initialization checks for selectedContainer (default to containerTypes[0]), cargoItems (default to empty array), and placedItems (default to empty array). Add console.log statements at key state update points to track when items are added, placed, or removed. Ensure all child components receive valid props with fallback values, and add null checks before passing state to LoadSummary and Container3DView."
-        }
-      ]
-    },
-    {
-      "id": "REQ-28",
-      "summary": "Verify LayerSummary component correctly calculates and displays layer information from placed cargo items",
-      "acceptanceCriteria": [
-        "LayerSummary overlay appears in the 3D view when items are placed",
-        "Layer counts accurately reflect the number of boxes at each vertical level",
-        "Layer summary updates dynamically when cargo items are added, moved, or removed",
-        "Total box count matches the number of placed items"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/LayerSummary.tsx",
-          "operation": "modify",
-          "description": "Add defensive null checks for placedItems prop and verify layering.ts functions are called correctly. Add console logging to display the calculated layer summary and verify counts match expectations. Ensure the component renders only when placedItems has at least one item and that the total count aggregates correctly."
+          "description": "Add comprehensive console.log statements in handleAddCargo to log the new item structure and updated cargoItems array length. Add logging in the update handler to track position changes with item IDs. Add useEffect hooks to log cargoItems state changes with timestamps. Ensure all logs include meaningful context like item IDs, array lengths, and operation types."
         },
         {
-          "path": "frontend/src/utils/layering.ts",
+          "path": "frontend/src/components/LoadSummary.tsx",
           "operation": "modify",
-          "description": "Review groupByLayers and generateLayerSummary functions to ensure Y-coordinate grouping logic handles floating-point precision correctly. Add defensive checks for empty arrays and verify that box numbering within layers is sequential and accurate. Add console logging to track layer detection and box assignments."
+          "description": "Add useEffect hook with cargoItems as a dependency to log when props change. Log the array length, total volume, total weight, and number of placed items. Include timestamps and clear labels to make debugging easier. Log calculation results before rendering."
         },
         {
           "path": "frontend/src/components/Container3DView.tsx",
           "operation": "modify",
-          "description": "Verify LayerSummary component is rendered within the 3D view and receives the placedItems prop correctly. Ensure the component updates when placedItems state changes and that it remains visible as an overlay on the canvas."
+          "description": "Add useEffect hook with cargoItems as a dependency to log when the 3D view receives updated props. Log the total number of items, number with defined positions, and list of item IDs being rendered. Add logging in the drag/drop handlers to track placement operations including position calculations and validation results."
+        },
+        {
+          "path": "frontend/src/components/CargoBox3D.tsx",
+          "operation": "modify",
+          "description": "Add console logging at component mount and when props change to confirm CargoBox3D instances are being created. Log the item ID, position coordinates, and dimensions. Use useEffect with item as a dependency to track prop updates."
+        }
+      ]
+    },
+    {
+      "id": "REQ-35",
+      "summary": "Check for React state mutation issues and ensure all state updates use immutable patterns",
+      "acceptanceCriteria": [
+        "handleAddCargo creates a new cargoItems array using spread operator",
+        "onUpdateItem creates a new cargoItems array with the updated item",
+        "No direct mutations of cargoItems or individual cargo item objects",
+        "React detects all state changes and triggers re-renders"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Audit all state update functions (handleAddCargo, handleUpdateCargo, handleDeleteCargo) to ensure they use immutable patterns. Replace any direct mutations with spread operators or array methods that return new arrays (map, filter). Ensure objects within the array are also cloned when updated using spread syntax. Verify that setCargoItems is always called with a completely new array reference. Add comments documenting the immutability pattern for future maintainers."
+        },
+        {
+          "path": "frontend/src/components/CargoForm.tsx",
+          "operation": "modify",
+          "description": "Review the onSubmit handler to ensure it creates new cargo item objects with all required properties and passes them to the parent's onAddCargo callback. Verify that the form does not attempt to mutate any passed props. Ensure the form resets correctly after submission without affecting previously added items."
         }
       ]
     }

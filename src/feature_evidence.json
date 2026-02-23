@@ -2,12 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-debug-and-fix-the-loadsummary-component-to-ensure-it-correctly-displays-load-statistics-volume-utilization-total-weight-item-counts-when-cargo-items-are-placed-in-the-container-verify-that-calculations-ts-utility-functions-are-being-called-with-the-correct-placed-items-data",
-      "featureTitle": "Debug and fix the LoadSummary component to ensure it correctly displays load statistics (volume utilization, total weight, item counts) when cargo items are placed in the container. Verify that calculations.ts utility functions are being called with the correct placed items data.",
+      "featureId": "feature-debug-and-fix-the-state-update-flow-in-app-tsx-to-ensure-that-when-cargo-items-are-added-via-cargoform-the-cargoitems-state-updates-correctly-and-triggers-re-renders-in-loadsummary-and-container3dview-components",
+      "featureTitle": "Debug and fix the state update flow in App.tsx to ensure that when cargo items are added via CargoForm, the cargoItems state updates correctly and triggers re-renders in LoadSummary and Container3DView components.",
       "files": [
         "frontend/src/App.tsx",
-        "frontend/src/components/LoadSummary.tsx",
-        "frontend/src/utils/calculations.ts"
+        "frontend/src/components/Container3DView.tsx",
+        "frontend/src/components/LoadSummary.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,33 +17,13 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-25"
+        "REQ-29"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-debug-and-fix-the-container3dview-component-to-ensure-the-3d-canvas-renders-correctly-with-the-container-wireframe-and-placed-cargo-boxes-visible-verify-react-three-fiber-canvas-initialization-check-for-console-errors-and-ensure-cargobox3d-components-are-rendering-within-the-scene",
-      "featureTitle": "Debug and fix the Container3DView component to ensure the 3D canvas renders correctly with the container wireframe and placed cargo boxes visible. Verify React Three Fiber Canvas initialization, check for console errors, and ensure CargoBox3D components are rendering within the scene.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/CargoBox3D.tsx",
-        "frontend/src/components/Container3DView.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-26"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-defensive-null-checks-and-error-handling-in-app-tsx-to-ensure-selectedcontainer-cargoitems-and-placeditems-state-are-properly-initialized-and-passed-to-child-components-log-state-values-to-console-for-debugging-if-rendering-issues-persist",
-      "featureTitle": "Add defensive null checks and error handling in App.tsx to ensure selectedContainer, cargoItems, and placedItems state are properly initialized and passed to child components. Log state values to console for debugging if rendering issues persist.",
+      "featureId": "feature-verify-and-fix-the-handleaddcargo-function-in-app-tsx-to-ensure-new-cargo-items-are-correctly-appended-to-the-cargoitems-state-array-with-unique-ids-and-proper-initialization-of-position-properties",
+      "featureTitle": "Verify and fix the handleAddCargo function in App.tsx to ensure new cargo items are correctly appended to the cargoItems state array with unique IDs and proper initialization of position properties.",
       "files": [
         "frontend/src/App.tsx"
       ],
@@ -55,17 +35,15 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-27"
+        "REQ-30"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-verify-that-the-layersummary-component-correctly-calculates-and-displays-layer-information-from-placed-cargo-items-ensure-layering-ts-utility-functions-properly-group-items-by-y-coordinate-and-generate-accurate-box-counts-per-layer",
-      "featureTitle": "Verify that the LayerSummary component correctly calculates and displays layer information from placed cargo items. Ensure layering.ts utility functions properly group items by Y-coordinate and generate accurate box counts per layer.",
+      "featureId": "feature-fix-the-loadsummary-component-to-correctly-receive-and-display-statistics-for-all-cargo-items-in-the-cargoitems-prop-calculating-total-volume-weight-and-item-counts-even-when-items-are-not-yet-placed-in-the-3d-container",
+      "featureTitle": "Fix the LoadSummary component to correctly receive and display statistics for all cargo items in the cargoItems prop, calculating total volume, weight, and item counts even when items are not yet placed in the 3D container.",
       "files": [
-        "frontend/src/components/Container3DView.tsx",
-        "frontend/src/components/LayerSummary.tsx",
-        "frontend/src/utils/layering.ts"
+        "frontend/src/components/LoadSummary.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -75,7 +53,85 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-28"
+        "REQ-31"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-debug-the-container3dview-component-to-ensure-it-receives-the-updated-cargoitems-array-and-renders-cargobox3d-components-for-each-placed-item-when-users-drag-items-from-cargolist-into-the-3d-scene",
+      "featureTitle": "Debug the Container3DView component to ensure it receives the updated cargoItems array and renders CargoBox3D components for each placed item when users drag items from CargoList into the 3D scene.",
+      "files": [
+        "frontend/src/components/CargoBox3D.tsx",
+        "frontend/src/components/Container3DView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-32"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-verify-that-the-ondrop-handler-in-container3dview-correctly-updates-the-cargo-item-s-position-property-and-triggers-a-state-update-in-app-tsx-via-the-onupdateitem-callback-when-an-item-is-placed",
+      "featureTitle": "Verify that the onDrop handler in Container3DView correctly updates the cargo item's position property and triggers a state update in App.tsx via the onUpdateItem callback when an item is placed.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/Container3DView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-33"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-detailed-console-logging-throughout-the-cargo-addition-and-placement-flow-to-track-state-changes-log-when-items-are-added-in-handleaddcargo-when-cargoitems-prop-changes-in-loadsummary-and-container3dview-and-when-items-are-placed-via-ondrop",
+      "featureTitle": "Add detailed console logging throughout the cargo addition and placement flow to track state changes: log when items are added in handleAddCargo, when cargoItems prop changes in LoadSummary and Container3DView, and when items are placed via onDrop.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/CargoBox3D.tsx",
+        "frontend/src/components/Container3DView.tsx",
+        "frontend/src/components/LoadSummary.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-34"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-check-for-react-state-mutation-issues-in-app-tsx-by-ensuring-all-state-updates-use-immutable-patterns-spreading-arrays-creating-new-objects-rather-than-mutating-existing-state-objects-directly",
+      "featureTitle": "Check for React state mutation issues in App.tsx by ensuring all state updates use immutable patterns (spreading arrays, creating new objects) rather than mutating existing state objects directly.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/CargoForm.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-35"
       ],
       "confidence": "high"
     }

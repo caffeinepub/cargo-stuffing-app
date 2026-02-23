@@ -21,69 +21,104 @@ function App() {
   // Debug logging for state changes
   useEffect(() => {
     console.log('=== App State Update ===');
+    console.log('Timestamp:', new Date().toISOString());
     console.log('Total cargo items:', cargoItems.length);
     console.log('Placed items:', cargoItems.filter(item => item.isPlaced).length);
-    console.log('Cargo items:', cargoItems.map(item => ({
+    console.log('Cargo items details:', cargoItems.map(item => ({
       id: item.id,
       name: item.name,
       isPlaced: item.isPlaced,
-      position: item.position
+      position: item.position,
+      dimensions: `${item.length}x${item.width}x${item.height} ${item.unit}`,
+      weight: item.weight,
+      quantity: item.quantity
     })));
   }, [cargoItems]);
 
-  const handleAddCargo = (cargo: Omit<CargoItem, 'id'>) => {
+  const handleAddCargo = (cargo: Omit<CargoItem, 'id' | 'isPlaced' | 'position'>) => {
+    // Create new item with unique ID and proper initialization
     const newItem: CargoItem = {
       ...cargo,
       id: `cargo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       isPlaced: false,
+      position: undefined, // Explicitly set position as undefined for unplaced items
     };
-    console.log('Adding new cargo item:', newItem);
-    setCargoItems((prev) => [...prev, newItem]);
+    
+    console.log('=== Adding New Cargo Item ===');
+    console.log('New item:', newItem);
+    console.log('Current array length:', cargoItems.length);
+    
+    // Use functional update to ensure we get the latest state
+    setCargoItems((prevItems) => {
+      const updatedItems = [...prevItems, newItem];
+      console.log('Updated array length:', updatedItems.length);
+      console.log('Updated items:', updatedItems.map(i => ({ id: i.id, name: i.name, isPlaced: i.isPlaced })));
+      return updatedItems;
+    });
   };
 
   const handleDeleteCargo = (id: string) => {
-    console.log('Deleting cargo item:', id);
-    setCargoItems((prev) => prev.filter((item) => item.id !== id));
+    console.log('=== Deleting Cargo Item ===');
+    console.log('Deleting item ID:', id);
+    
+    setCargoItems((prevItems) => {
+      const filtered = prevItems.filter((item) => item.id !== id);
+      console.log('Items after deletion:', filtered.length);
+      return filtered;
+    });
+    
     if (selectedItemId === id) {
       setSelectedItemId(null);
     }
   };
 
   const handlePlaceItem = (itemId: string, position: Position3D) => {
-    console.log('Placing item:', itemId, 'at position:', position);
-    setCargoItems((prev) => {
-      const updated = prev.map((item) =>
+    console.log('=== Placing Item ===');
+    console.log('Item ID:', itemId);
+    console.log('Position:', position);
+    
+    setCargoItems((prevItems) => {
+      const updated = prevItems.map((item) =>
         item.id === itemId
           ? { ...item, position, isPlaced: true }
           : item
       );
-      console.log('Updated cargo items after placement:', updated.filter(i => i.isPlaced).length, 'placed');
+      
+      const placedCount = updated.filter(i => i.isPlaced).length;
+      console.log('Updated cargo items after placement. Placed count:', placedCount);
+      console.log('Placed items:', updated.filter(i => i.isPlaced).map(i => ({ id: i.id, name: i.name, position: i.position })));
+      
       return updated;
     });
+    
     setDraggedItem(null);
   };
 
   const handleRemoveItem = (itemId: string) => {
-    console.log('Removing item from container:', itemId);
-    setCargoItems((prev) =>
-      prev.map((item) =>
+    console.log('=== Removing Item from Container ===');
+    console.log('Item ID:', itemId);
+    
+    setCargoItems((prevItems) =>
+      prevItems.map((item) =>
         item.id === itemId
           ? { ...item, position: undefined, isPlaced: false }
           : item
       )
     );
+    
     if (selectedItemId === itemId) {
       setSelectedItemId(null);
     }
   };
 
   const handleDragStart = (item: CargoItem) => {
-    console.log('Drag started for item:', item.id, item.name);
+    console.log('=== Drag Started ===');
+    console.log('Item:', item.id, item.name);
     setDraggedItem(item);
   };
 
   const handleDragEnd = () => {
-    console.log('Drag ended');
+    console.log('=== Drag Ended ===');
     setDraggedItem(null);
   };
 
@@ -98,7 +133,9 @@ function App() {
     );
   }
 
-  console.log('Rendering App with container:', selectedContainer.id);
+  console.log('=== Rendering App ===');
+  console.log('Container:', selectedContainer.id);
+  console.log('Total items to render:', cargoItems.length);
 
   return (
     <Layout>

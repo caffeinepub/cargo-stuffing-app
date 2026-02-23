@@ -1,4 +1,3 @@
-// Summary component showing load calculations and utilization for placed items only
 import { CargoItem } from '../types/cargo';
 import { ContainerType } from '../types/container';
 import {
@@ -21,34 +20,51 @@ export function LoadSummary({ containerType, cargoItems }: LoadSummaryProps) {
   // Defensive check: ensure cargoItems is an array
   const safeCargoItems = Array.isArray(cargoItems) ? cargoItems : [];
   
-  // Filter to only placed items
+  // Filter to only placed items for volume calculations
   const placedItems = safeCargoItems.filter(item => item.isPlaced === true);
   
   // Debug logging
   useEffect(() => {
-    console.log('=== LoadSummary Update ===');
+    console.log('=== LoadSummary Component Update ===');
+    console.log('Timestamp:', new Date().toISOString());
     console.log('Total cargo items received:', safeCargoItems.length);
-    console.log('Placed items:', placedItems.length);
+    console.log('Placed items count:', placedItems.length);
     console.log('Container type:', containerType?.id);
-  }, [safeCargoItems, placedItems.length, containerType]);
+    console.log('All items:', safeCargoItems.map(item => ({
+      id: item.id,
+      name: item.name,
+      isPlaced: item.isPlaced,
+      hasPosition: !!item.position
+    })));
+  }, [safeCargoItems.length, placedItems.length, containerType?.id]);
 
   // Defensive calculations with fallbacks
   let totalCargoVolume = 0;
+  let totalAllCargoVolume = 0; // Volume of all items (placed + unplaced)
   let containerVolume = 0;
   let utilization = 0;
   let totalWeight = 0;
+  let totalAllWeight = 0; // Weight of all items
 
   try {
+    // Calculate for placed items only
     totalCargoVolume = calculateTotalCargoVolume(placedItems);
+    totalWeight = calculateTotalWeight(placedItems);
+    
+    // Calculate for all items
+    totalAllCargoVolume = calculateTotalCargoVolume(safeCargoItems);
+    totalAllWeight = calculateTotalWeight(safeCargoItems);
+    
     containerVolume = calculateContainerVolume(containerType);
     utilization = calculateUtilization(totalCargoVolume, containerVolume);
-    totalWeight = calculateTotalWeight(placedItems);
 
     console.log('LoadSummary calculations:', {
-      totalCargoVolume: totalCargoVolume.toFixed(2),
+      placedCargoVolume: totalCargoVolume.toFixed(2),
+      allCargoVolume: totalAllCargoVolume.toFixed(2),
       containerVolume: containerVolume.toFixed(2),
       utilization: utilization.toFixed(1),
-      totalWeight: totalWeight.toFixed(1)
+      placedWeight: totalWeight.toFixed(1),
+      allWeight: totalAllWeight.toFixed(1)
     });
   } catch (error) {
     console.error('Error calculating load summary:', error);
@@ -96,6 +112,11 @@ export function LoadSummary({ containerType, cargoItems }: LoadSummaryProps) {
             <span>Placed: {totalCargoVolume.toFixed(2)}m³</span>
             <span>Container: {containerVolume.toFixed(2)}m³</span>
           </div>
+          {totalAllCargoVolume > totalCargoVolume && (
+            <p className="text-xs text-muted-foreground">
+              💡 Total cargo volume (including unplaced): {totalAllCargoVolume.toFixed(2)}m³
+            </p>
+          )}
           {utilization > 100 && (
             <p className="text-sm text-destructive font-medium">
               ⚠️ Warning: Placed cargo volume exceeds container capacity
@@ -115,6 +136,11 @@ export function LoadSummary({ containerType, cargoItems }: LoadSummaryProps) {
           <p className="text-xs text-muted-foreground">
             {(totalWeight / 1000).toFixed(2)} metric tons
           </p>
+          {totalAllWeight > totalWeight && (
+            <p className="text-xs text-muted-foreground">
+              💡 Total weight (including unplaced): {totalAllWeight.toFixed(1)} kg ({(totalAllWeight / 1000).toFixed(2)} tons)
+            </p>
+          )}
         </div>
 
         {/* Statistics */}

@@ -105,7 +105,7 @@ function InteractiveScene({
   isValidPosition: boolean;
   onSceneReady: () => void;
 }) {
-  const { gl, scene, camera } = useThree();
+  const { gl } = useThree();
 
   useEffect(() => {
     // Log successful initialization
@@ -120,9 +120,12 @@ function InteractiveScene({
   const placedItems = cargoItems.filter((item) => item.isPlaced && item.position);
   
   useEffect(() => {
-    console.log('=== InteractiveScene Update ===');
-    console.log('Total cargo items:', cargoItems.length);
-    console.log('Placed items with position:', placedItems.length);
+    console.log('=== Container3DView InteractiveScene Update ===');
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Total cargo items received:', cargoItems.length);
+    console.log('Items with isPlaced=true:', cargoItems.filter(i => i.isPlaced).length);
+    console.log('Items with position defined:', cargoItems.filter(i => i.position).length);
+    console.log('Placed items (isPlaced && position):', placedItems.length);
     console.log('Placed items details:', placedItems.map(item => ({
       id: item.id,
       name: item.name,
@@ -130,7 +133,8 @@ function InteractiveScene({
       layerNumber: item.layerNumber,
       boxNumberInLayer: item.boxNumberInLayer
     })));
-  }, [cargoItems.length, placedItems.length]);
+    console.log('Will render', placedItems.length, 'CargoBox3D components');
+  }, [cargoItems, placedItems.length]);
 
   const handleBackgroundClick = () => {
     if (onSelectItem) {
@@ -157,7 +161,7 @@ function InteractiveScene({
 
       {/* Render placed cargo items */}
       {placedItems.map((item) => {
-        console.log('Rendering CargoBox3D for item:', item.id, item.name);
+        console.log('Rendering CargoBox3D for item:', item.id, item.name, 'at position:', item.position);
         return (
           <CargoBox3D
             key={item.id}
@@ -224,181 +228,137 @@ class Canvas3DErrorBoundary extends Component<
   }
 }
 
-export function Container3DView(props: Container3DViewProps) {
-  const [canvasError, setCanvasError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export function Container3DView({
+  containerType,
+  cargoItems,
+  onPlaceItem,
+  onSelectItem,
+  selectedItemId,
+  onRemoveItem,
+  draggedItem,
+}: Container3DViewProps) {
+  const canvasRef = useRef<HTMLDivElement>(null);
   const [previewPosition, setPreviewPosition] = useState<Position3D | null>(null);
   const [isValidPosition, setIsValidPosition] = useState(false);
-  const loadingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Debug props
+  // Debug logging for prop changes
   useEffect(() => {
     console.log('=== Container3DView Props Update ===');
-    console.log('Container type:', props.containerType?.id);
-    console.log('Total cargo items:', props.cargoItems?.length || 0);
-    console.log('Dragged item:', props.draggedItem?.name || 'none');
-  }, [props.containerType, props.cargoItems, props.draggedItem]);
+    console.log('Timestamp:', new Date().toISOString());
+    console.log('Container type:', containerType.id);
+    console.log('Total cargo items:', cargoItems.length);
+    console.log('Dragged item:', draggedItem ? `${draggedItem.id} (${draggedItem.name})` : 'none');
+    console.log('Cargo items breakdown:', {
+      total: cargoItems.length,
+      placed: cargoItems.filter(i => i.isPlaced).length,
+      withPosition: cargoItems.filter(i => i.position).length,
+      unplaced: cargoItems.filter(i => !i.isPlaced).length
+    });
+  }, [containerType, cargoItems, draggedItem]);
 
-  // Calculate layer assignments and box numbers for all placed items
-  const enrichedCargoItems = useMemo(() => {
-    try {
-      console.log('Calculating layer assignments for', props.cargoItems.length, 'items');
-      const enriched = calculateLayerAssignments(props.cargoItems);
-      console.log('Enriched items:', enriched.filter(i => i.isPlaced).map(i => ({
-        id: i.id,
-        name: i.name,
-        layerNumber: i.layerNumber,
-        boxNumberInLayer: i.boxNumberInLayer
-      })));
-      return enriched;
-    } catch (error) {
-      console.error('Error calculating layer assignments:', error);
-      return props.cargoItems;
-    }
-  }, [props.cargoItems]);
+  // Calculate layer assignments for placed items
+  const itemsWithLayers = useMemo(() => {
+    const placedItems = cargoItems.filter((item) => item.isPlaced && item.position);
+    console.log('Calculating layers for', placedItems.length, 'placed items');
+    return calculateLayerAssignments(placedItems);
+  }, [cargoItems]);
 
-  // Calculate layer summary
   const layerSummary = useMemo(() => {
-    try {
-      const summary = getLayerSummary(enrichedCargoItems);
-      console.log('Layer summary:', summary);
-      return summary;
-    } catch (error) {
-      console.error('Error calculating layer summary:', error);
-      return [];
-    }
-  }, [enrichedCargoItems]);
+    const summary = getLayerSummary(itemsWithLayers);
+    console.log('Layer summary:', summary);
+    return summary;
+  }, [itemsWithLayers]);
 
-  // Set timeout for loading state
-  useEffect(() => {
-    console.log('Container3DView mounting, starting initialization...');
-    
-    loadingTimeoutRef.current = setTimeout(() => {
-      if (isLoading) {
-        console.error('3D Canvas initialization timeout');
-        setCanvasError('3D view initialization timed out. Please refresh the page or try a different browser.');
-        setIsLoading(false);
-      }
-    }, 10000); // 10 second timeout
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!draggedItem || !canvasRef.current) return;
 
-    return () => {
-      if (loadingTimeoutRef.current) {
-        clearTimeout(loadingTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleSceneReady = () => {
-    console.log('Scene ready, clearing loading state');
-    setIsLoading(false);
-    if (loadingTimeoutRef.current) {
-      clearTimeout(loadingTimeoutRef.current);
-    }
-  };
-
-  // Defensive check: ensure containerType is valid
-  if (!props.containerType) {
-    console.error('Container3DView: containerType is null or undefined');
-    return (
-      <div className="w-full h-[500px] bg-card rounded-lg border border-border overflow-hidden">
-        <Canvas3DFallback isLoading={false} error="Container type not available" />
-      </div>
-    );
-  }
-
-  if (canvasError) {
-    return (
-      <div className="w-full h-[500px] bg-card rounded-lg border border-border overflow-hidden">
-        <Canvas3DFallback isLoading={false} error={canvasError} />
-      </div>
-    );
-  }
-
-  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!props.draggedItem) return;
-
-    const rect = event.currentTarget.getBoundingClientRect();
+    const rect = canvasRef.current.getBoundingClientRect();
     const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
     const y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-    // Calculate position based on pointer - simplified approach
-    const dims = getCargoItemDimensionsInMeters(props.draggedItem);
-    const containerLength = props.containerType.length;
-    const containerWidth = props.containerType.width;
+    const dims = getCargoItemDimensionsInMeters(draggedItem);
+    const worldX = x * (containerType.length / 2);
+    const worldZ = y * (containerType.width / 2);
 
-    // Map normalized coordinates to container space
-    const posX = (x * containerLength) / 2;
-    const posZ = (y * containerWidth) / 2;
-
-    // Snap each coordinate to grid
+    // Snap each coordinate individually
     const snappedPos: Position3D = {
-      x: snapToGrid(posX, 0.1),
+      x: snapToGrid(worldX, 0.1),
       y: 0,
-      z: snapToGrid(posZ, 0.1)
+      z: snapToGrid(worldZ, 0.1)
     };
     
     setPreviewPosition(snappedPos);
 
-    // Create a temporary item with the preview position for validation
-    const tempItem: CargoItem = {
-      ...props.draggedItem,
-      position: snappedPos
-    };
-
-    // Validate placement
-    const valid = isValidPlacement(
-      tempItem,
-      snappedPos,
-      props.containerType,
-      enrichedCargoItems.filter((item) => item.isPlaced && item.position)
-    );
+    const placedItems = cargoItems.filter((item) => item.isPlaced && item.position);
+    const valid = isValidPlacement(draggedItem, snappedPos, containerType, placedItems);
     setIsValidPosition(valid);
   };
 
   const handleClick = () => {
-    if (props.draggedItem && previewPosition && isValidPosition && props.onPlaceItem) {
-      console.log('Placing item via click:', props.draggedItem.id, 'at', previewPosition);
-      props.onPlaceItem(props.draggedItem.id, previewPosition);
+    if (draggedItem && previewPosition && isValidPosition && onPlaceItem) {
+      console.log('=== Placing Item via Click ===');
+      console.log('Item:', draggedItem.id, draggedItem.name);
+      console.log('Position:', previewPosition);
+      onPlaceItem(draggedItem.id, previewPosition);
       setPreviewPosition(null);
     }
   };
 
+  const handleSceneReady = () => {
+    console.log('3D Scene ready, hiding loading state');
+    setIsLoading(false);
+  };
+
+  const handleError = (errorMessage: string) => {
+    console.error('3D View error:', errorMessage);
+    setError(errorMessage);
+    setIsLoading(false);
+  };
+
+  if (error) {
+    return <Canvas3DFallback error={error} />;
+  }
+
   return (
-    <div className="relative w-full h-[500px] bg-card rounded-lg border border-border overflow-hidden">
-      {/* Layer Summary Overlay */}
-      {layerSummary.length > 0 && <LayerSummary layers={layerSummary} />}
-
-      {/* Loading Overlay */}
-      {isLoading && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <Canvas3DFallback isLoading={true} />
-        </div>
-      )}
-
-      <Canvas3DErrorBoundary onError={setCanvasError}>
-        <div
-          className="w-full h-full cursor-pointer"
-          onPointerMove={handlePointerMove}
-          onClick={handleClick}
-        >
-          <Canvas
-            camera={{ position: [15, 10, 15], fov: 50 }}
-            onCreated={({ gl }) => {
-              console.log('Canvas created, WebGL context:', gl.capabilities);
-            }}
-          >
-            <Suspense fallback={null}>
+    <div className="relative">
+      <div
+        ref={canvasRef}
+        className="w-full h-[600px] bg-background border border-border rounded-lg overflow-hidden"
+        onMouseMove={handleMouseMove}
+        onClick={handleClick}
+      >
+        {isLoading && <Canvas3DFallback />}
+        <Canvas3DErrorBoundary onError={handleError}>
+          <Suspense fallback={null}>
+            <Canvas
+              camera={{ position: [15, 10, 15], fov: 50 }}
+              gl={{ antialias: true, alpha: true }}
+              style={{ background: 'transparent' }}
+            >
               <InteractiveScene
-                {...props}
-                cargoItems={enrichedCargoItems}
+                containerType={containerType}
+                cargoItems={itemsWithLayers}
+                onSelectItem={onSelectItem}
+                selectedItemId={selectedItemId}
+                onRemoveItem={onRemoveItem}
                 previewPosition={previewPosition}
                 isValidPosition={isValidPosition}
+                draggedItem={draggedItem}
                 onSceneReady={handleSceneReady}
               />
-            </Suspense>
-          </Canvas>
+            </Canvas>
+          </Suspense>
+        </Canvas3DErrorBoundary>
+      </div>
+
+      {/* Layer Summary Overlay */}
+      {layerSummary.length > 0 && (
+        <div className="absolute top-4 right-4">
+          <LayerSummary layers={layerSummary} />
         </div>
-      </Canvas3DErrorBoundary>
+      )}
     </div>
   );
 }
