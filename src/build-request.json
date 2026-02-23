@@ -1,0 +1,101 @@
+{
+  "kind": "build_request",
+  "title": "Fix load summary data loading and 3D layout rendering issues",
+  "projectName": "Cargo Load Planner",
+  "priority": "high",
+  "requirements": [
+    {
+      "id": "REQ-25",
+      "text": "Debug and fix the LoadSummary component to ensure it correctly displays load statistics (volume utilization, total weight, item counts) when cargo items are placed in the container. Verify that calculations.ts utility functions are being called with the correct placed items data.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "load summary data not loading"
+        ]
+      },
+      "acceptanceCriteria": [
+        "LoadSummary component renders and displays current load statistics",
+        "Volume utilization percentage is calculated and shown correctly",
+        "Total weight and item counts reflect placed cargo items",
+        "Progress bar displays appropriate color-coded warnings for capacity"
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "text": "Debug and fix the Container3DView component to ensure the 3D canvas renders correctly with the container wireframe and placed cargo boxes visible. Verify React Three Fiber Canvas initialization, check for console errors, and ensure CargoBox3D components are rendering within the scene.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "layout plant with box not showing"
+        ]
+      },
+      "acceptanceCriteria": [
+        "3D container wireframe displays correctly in the canvas",
+        "Placed cargo boxes render as 3D meshes with proper dimensions and colors",
+        "Box labels with layer-wise numbering are visible on cargo items",
+        "No React Three Fiber or WebGL errors appear in the console"
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "text": "Add defensive null checks and error handling in App.tsx to ensure selectedContainer, cargoItems, and placedItems state are properly initialized and passed to child components. Log state values to console for debugging if rendering issues persist.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "load summary data not loading",
+          "layout plant with box not showing"
+        ]
+      },
+      "acceptanceCriteria": [
+        "App.tsx initializes all required state variables with safe default values",
+        "LoadSummary and Container3DView receive valid props even when state is empty",
+        "Console logs confirm state is being updated when cargo items are placed",
+        "No undefined or null reference errors occur during initial render"
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "text": "Verify that the LayerSummary component correctly calculates and displays layer information from placed cargo items. Ensure layering.ts utility functions properly group items by Y-coordinate and generate accurate box counts per layer.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-user-1"
+        ],
+        "quotes": [
+          "layout plant with box not showing"
+        ]
+      },
+      "acceptanceCriteria": [
+        "LayerSummary overlay appears in the 3D view when items are placed",
+        "Layer counts accurately reflect the number of boxes at each vertical level",
+        "Layer summary updates dynamically when cargo items are added, moved, or removed",
+        "Total box count matches the number of placed items"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify the backend/main.mo file as it contains no relevant logic for this issue",
+    "Maintain compatibility with existing React Three Fiber and Three.js implementations",
+    "Preserve the current state management structure in App.tsx",
+    "Keep error boundary and fallback UI components intact"
+  ],
+  "nonGoals": [
+    "Adding new features or functionality beyond fixing the rendering issues",
+    "Changing the visual design or layout of components",
+    "Modifying the drag-and-drop interaction logic",
+    "Implementing new cargo placement algorithms"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-debug-and-fix-the-loadsummary-component-to-ensure-it-correctly-displays-load-statistics-volume-utilization-total-weight-item-counts-when-cargo-items-are-placed-in-the-container-verify-that-calculations-ts-utility-functions-are-being-called-with-the-correct-placed-items-data",
+      "featureTitle": "Debug and fix the LoadSummary component to ensure it correctly displays load statistics (volume utilization, total weight, item counts) when cargo items are placed in the container. Verify that calculations.ts utility functions are being called with the correct placed items data.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/LoadSummary.tsx",
+        "frontend/src/utils/calculations.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-25"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-debug-and-fix-the-container3dview-component-to-ensure-the-3d-canvas-renders-correctly-with-the-container-wireframe-and-placed-cargo-boxes-visible-verify-react-three-fiber-canvas-initialization-check-for-console-errors-and-ensure-cargobox3d-components-are-rendering-within-the-scene",
+      "featureTitle": "Debug and fix the Container3DView component to ensure the 3D canvas renders correctly with the container wireframe and placed cargo boxes visible. Verify React Three Fiber Canvas initialization, check for console errors, and ensure CargoBox3D components are rendering within the scene.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/CargoBox3D.tsx",
+        "frontend/src/components/Container3DView.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-26"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-defensive-null-checks-and-error-handling-in-app-tsx-to-ensure-selectedcontainer-cargoitems-and-placeditems-state-are-properly-initialized-and-passed-to-child-components-log-state-values-to-console-for-debugging-if-rendering-issues-persist",
+      "featureTitle": "Add defensive null checks and error handling in App.tsx to ensure selectedContainer, cargoItems, and placedItems state are properly initialized and passed to child components. Log state values to console for debugging if rendering issues persist.",
+      "files": [
+        "frontend/src/App.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-27"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-verify-that-the-layersummary-component-correctly-calculates-and-displays-layer-information-from-placed-cargo-items-ensure-layering-ts-utility-functions-properly-group-items-by-y-coordinate-and-generate-accurate-box-counts-per-layer",
+      "featureTitle": "Verify that the LayerSummary component correctly calculates and displays layer information from placed cargo items. Ensure layering.ts utility functions properly group items by Y-coordinate and generate accurate box counts per layer.",
+      "files": [
+        "frontend/src/components/Container3DView.tsx",
+        "frontend/src/components/LayerSummary.tsx",
+        "frontend/src/utils/layering.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-28"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

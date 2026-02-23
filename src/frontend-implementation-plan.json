@@ -1,0 +1,110 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix load summary data loading and 3D layout rendering issues",
+  "requirements": [
+    {
+      "id": "REQ-25",
+      "summary": "Debug and fix LoadSummary component to correctly display load statistics for placed cargo items",
+      "acceptanceCriteria": [
+        "LoadSummary component renders and displays current load statistics",
+        "Volume utilization percentage is calculated and shown correctly",
+        "Total weight and item counts reflect placed cargo items",
+        "Progress bar displays appropriate color-coded warnings for capacity"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LoadSummary.tsx",
+          "operation": "modify",
+          "description": "Add defensive null checks for placedItems prop and ensure calculations.ts functions are called with valid data. Add console.log statements to debug data flow and verify that volume utilization, total weight, and item counts are calculated correctly from the placed items array."
+        },
+        {
+          "path": "frontend/src/utils/calculations.ts",
+          "operation": "modify",
+          "description": "Review and verify calculateVolumeUtilization, calculateTotalWeight, and getPlacedItems functions handle edge cases correctly. Add defensive checks for undefined or empty arrays and ensure calculations return valid numbers even when no items are placed."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Verify that placedItems state is correctly passed to LoadSummary component and that the state updates properly when cargo items are placed. Add console logging to track placedItems state changes and ensure LoadSummary receives fresh data on every update."
+        }
+      ]
+    },
+    {
+      "id": "REQ-26",
+      "summary": "Debug and fix Container3DView component to ensure 3D canvas renders container wireframe and placed cargo boxes",
+      "acceptanceCriteria": [
+        "3D container wireframe displays correctly in the canvas",
+        "Placed cargo boxes render as 3D meshes with proper dimensions and colors",
+        "Box labels with layer-wise numbering are visible on cargo items",
+        "No React Three Fiber or WebGL errors appear in the console"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/Container3DView.tsx",
+          "operation": "modify",
+          "description": "Add error boundary wrapping around Canvas component if not present, verify Canvas initialization props are correct, and add console.log statements to confirm placedItems are received by the component. Check that the container wireframe mesh is rendering with correct dimensions and that CargoBox3D components are instantiated for each placed item."
+        },
+        {
+          "path": "frontend/src/components/CargoBox3D.tsx",
+          "operation": "modify",
+          "description": "Add defensive null checks for item prop and verify mesh geometry is created with valid dimensions. Ensure the component renders correctly even with minimal data and add console logging to confirm each cargo box is being instantiated. Verify that CargoBoxLabel is rendered and positioned correctly above each box."
+        },
+        {
+          "path": "frontend/src/components/Canvas3DFallback.tsx",
+          "operation": "modify",
+          "description": "Enhance fallback component to display more specific error messages if WebGL initialization fails or if React Three Fiber encounters issues. Add troubleshooting tips for common 3D rendering problems including browser compatibility and GPU acceleration settings."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Verify that selectedContainer and placedItems state are correctly passed to Container3DView component. Add console logging to confirm state updates trigger re-renders of the 3D view. Ensure that when cargo items are placed, the placedItems array is updated immediately and Container3DView receives the new data."
+        }
+      ]
+    },
+    {
+      "id": "REQ-27",
+      "summary": "Add defensive null checks and error handling in App.tsx to ensure state is properly initialized and passed to child components",
+      "acceptanceCriteria": [
+        "App.tsx initializes all required state variables with safe default values",
+        "LoadSummary and Container3DView receive valid props even when state is empty",
+        "Console logs confirm state is being updated when cargo items are placed",
+        "No undefined or null reference errors occur during initial render"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add defensive initialization checks for selectedContainer (default to containerTypes[0]), cargoItems (default to empty array), and placedItems (default to empty array). Add console.log statements at key state update points to track when items are added, placed, or removed. Ensure all child components receive valid props with fallback values, and add null checks before passing state to LoadSummary and Container3DView."
+        }
+      ]
+    },
+    {
+      "id": "REQ-28",
+      "summary": "Verify LayerSummary component correctly calculates and displays layer information from placed cargo items",
+      "acceptanceCriteria": [
+        "LayerSummary overlay appears in the 3D view when items are placed",
+        "Layer counts accurately reflect the number of boxes at each vertical level",
+        "Layer summary updates dynamically when cargo items are added, moved, or removed",
+        "Total box count matches the number of placed items"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/LayerSummary.tsx",
+          "operation": "modify",
+          "description": "Add defensive null checks for placedItems prop and verify layering.ts functions are called correctly. Add console logging to display the calculated layer summary and verify counts match expectations. Ensure the component renders only when placedItems has at least one item and that the total count aggregates correctly."
+        },
+        {
+          "path": "frontend/src/utils/layering.ts",
+          "operation": "modify",
+          "description": "Review groupByLayers and generateLayerSummary functions to ensure Y-coordinate grouping logic handles floating-point precision correctly. Add defensive checks for empty arrays and verify that box numbering within layers is sequential and accurate. Add console logging to track layer detection and box assignments."
+        },
+        {
+          "path": "frontend/src/components/Container3DView.tsx",
+          "operation": "modify",
+          "description": "Verify LayerSummary component is rendered within the 3D view and receives the placedItems prop correctly. Ensure the component updates when placedItems state changes and that it remains visible as an overlay on the canvas."
+        }
+      ]
+    }
+  ]
+}

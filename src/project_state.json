@@ -1,0 +1,302 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 15,
+  "summary": "Web-based cargo loading planner with 3D visualization, container selection, and cargo management capabilities inspired by EasyCargo3D and Pier2Pier LoadCalc",
+  "architectural_notes": [
+    "Web application (not native Android app) accessible via browser on mobile devices",
+    "Frontend: React + TypeScript with Three.js for 3D visualization",
+    "Backend: Motoko on Internet Computer",
+    "Reference sites: EasyCargo3D and Pier2Pier LoadCalc",
+    "Mobile-first responsive design for Android browser access"
+  ],
+  "known_issues": [
+    "React Three Fiber error: 'Div is not part of the THREE namespace' - incorrect component usage in 3D canvas context",
+    "Version 6 deployment: Load summary data not loading and layout plan with boxes not showing in 3D view"
+  ],
+  "isFixRequest": true,
+  "existing_features": [
+    {
+      "id": "feature-create-a-container-selection-interface-allowing-users-to-choose-between-standard-container-types-20ft-5-9m-x-2-35m-x-2-39m-40ft-12-03m-x-2-35m-x-2-39m-and-40ft-high-cube-12-03m-x-2-35m-x-2-69m-display-internal-dimensions-for-each-container-type",
+      "title": "Create a container selection interface allowing users to choose between standard container types: 20ft (5.9m x 2.35m x 2.39m), 40ft (12.03m x 2.35m x 2.39m), and 40ft High Cube (12.03m x 2.35m x 2.69m). Display internal dimensions for each container type.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-basic-3d-container-visualization-using-three-js-and-react-three-fiber-that-renders-the-selected-container-as-a-wireframe-box-with-proper-proportions-based-on-the-container-dimensions",
+      "title": "Implement a basic 3D container visualization using Three.js and React Three Fiber that renders the selected container as a wireframe box with proper proportions based on the container dimensions.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-form-to-add-cargo-items-with-fields-for-name-length-width-height-in-cm-or-m-weight-in-kg-and-quantity-store-cargo-items-in-frontend-state",
+      "title": "Create a form to add cargo items with fields for name, length, width, height (in cm or m), weight (in kg), and quantity. Store cargo items in frontend state.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-basic-load-calculations-showing-total-cargo-volume-container-volume-and-utilization-percentage-based-on-added-cargo-items-and-selected-container",
+      "title": "Display basic load calculations showing total cargo volume, container volume, and utilization percentage based on added cargo items and selected container.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-apply-a-professional-logistics-focused-design-theme-with-clean-industrial-aesthetics-using-neutral-colors-grays-whites-accent-color-distinct-from-blue-purple-clear-typography-and-intuitive-layout-suitable-for-cargo-planning-workflows",
+      "title": "Apply a professional, logistics-focused design theme with clean industrial aesthetics using neutral colors (grays, whites, accent color distinct from blue/purple), clear typography, and intuitive layout suitable for cargo planning workflows.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-interactive-3d-cargo-placement-allowing-users-to-click-and-drag-cargo-items-from-the-cargolist-into-the-container3dview-to-position-them-within-the-container-boundaries",
+      "title": "Implement interactive 3D cargo placement allowing users to click and drag cargo items from the CargoList into the Container3DView to position them within the container boundaries",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-render-placed-cargo-items-as-3d-boxes-in-the-container3dview-component-with-dimensions-matching-the-cargo-item-specifications-using-distinct-colors-to-differentiate-items",
+      "title": "Render placed cargo items as 3D boxes in the Container3DView component with dimensions matching the cargo item specifications, using distinct colors to differentiate items",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-visual-feedback-in-the-3d-view-showing-valid-and-invalid-placement-zones-as-users-drag-cargo-items-highlighting-areas-where-items-can-be-placed",
+      "title": "Add visual feedback in the 3D view showing valid and invalid placement zones as users drag cargo items, highlighting areas where items can be placed",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-loadsummary-component-to-reflect-only-placed-cargo-items-in-the-utilization-calculations-distinguishing-between-total-added-items-and-actually-placed-items",
+      "title": "Update the LoadSummary component to reflect only placed cargo items in the utilization calculations, distinguishing between total added items and actually placed items",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-enable-users-to-select-and-reposition-already-placed-cargo-items-within-the-3d-container-view-by-clicking-and-dragging-them-to-new-valid-positions",
+      "title": "Enable users to select and reposition already-placed cargo items within the 3D container view by clicking and dragging them to new valid positions",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-remove-delete-action-for-placed-cargo-items-in-the-3d-view-allowing-users-to-remove-items-from-the-container-and-return-them-to-unplaced-state-in-the-cargo-list",
+      "title": "Add a remove/delete action for placed cargo items in the 3D view, allowing users to remove items from the container and return them to unplaced state in the cargo list",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-blank-page-rendering-issue-that-occurs-when-the-application-initially-loads-ensure-the-root-app-component-mounts-correctly-and-displays-the-initial-ui-with-container-selector-cargo-form-and-3d-view",
+      "title": "Investigate and fix the blank page rendering issue that occurs when the application initially loads. Ensure the root App component mounts correctly and displays the initial UI with container selector, cargo form, and 3D view.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-error-boundary-component-to-catch-and-display-rendering-errors-gracefully-preventing-complete-application-failure-and-providing-user-friendly-error-messages",
+      "title": "Add error boundary component to catch and display rendering errors gracefully, preventing complete application failure and providing user-friendly error messages.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-three-js-and-react-three-fiber-initialization-is-not-blocking-the-main-ui-render-ensure-3d-canvas-loads-asynchronously-without-preventing-other-components-from-displaying",
+      "title": "Verify Three.js and React Three Fiber initialization is not blocking the main UI render. Ensure 3D canvas loads asynchronously without preventing other components from displaying.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-react-three-fiber-error-div-is-not-part-of-the-three-namespace-by-replacing-invalid-jsx-elements-like-div-inside-the-canvas-component-with-proper-react-three-fiber-or-native-three-js-components-html-elements-must-be-wrapped-in-the-html-component-from-react-three-drei-when-used-inside-3d-scenes",
+      "title": "Fix the React Three Fiber error 'Div is not part of the THREE namespace' by replacing invalid JSX elements (like <div>) inside the Canvas component with proper React Three Fiber or native Three.js components. HTML elements must be wrapped in the Html component from @react-three/drei when used inside 3D scenes.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-review-container3dview-tsx-and-cargobox3d-tsx-to-ensure-all-components-used-inside-the-canvas-are-either-react-three-fiber-primitives-mesh-boxgeometry-meshstandardmaterial-etc-or-properly-imported-three-js-objects-not-regular-html-dom-elements",
+      "title": "Review Container3DView.tsx and CargoBox3D.tsx to ensure all components used inside the Canvas are either React Three Fiber primitives (mesh, boxGeometry, meshStandardMaterial, etc.) or properly imported Three.js objects, not regular HTML/DOM elements.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-layer-detection-logic-to-identify-and-group-placed-cargo-items-by-their-vertical-position-y-coordinate-in-the-3d-container-view-items-with-similar-y-coordinates-within-a-small-threshold-should-be-grouped-into-the-same-layer",
+      "title": "Add layer detection logic to identify and group placed cargo items by their vertical position (Y-coordinate) in the 3D container view. Items with similar Y-coordinates (within a small threshold) should be grouped into the same layer.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-display-sequential-box-numbers-on-each-cargo-item-in-the-3d-view-using-three-js-text-sprites-or-html-overlays-from-react-three-drei-numbers-should-be-formatted-as-layer-box-e-g-1-1-1-2-2-1-where-the-first-number-is-the-layer-and-the-second-is-the-box-number-within-that-layer",
+      "title": "Display sequential box numbers on each cargo item in the 3D view using Three.js text sprites or HTML overlays from @react-three/drei. Numbers should be formatted as 'Layer-Box' (e.g., '1-1', '1-2', '2-1') where the first number is the layer and the second is the box number within that layer.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-layer-summary-panel-or-overlay-in-the-container3dview-showing-the-count-of-boxes-per-layer-making-it-easy-to-count-items-at-each-level-without-manual-inspection-display-information-such-as-layer-1-4-boxes-layer-2-3-boxes-etc",
+      "title": "Add a layer summary panel or overlay in the Container3DView showing the count of boxes per layer, making it easy to count items at each level without manual inspection. Display information such as 'Layer 1: 4 boxes', 'Layer 2: 3 boxes', etc.",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-box-numbering-updates-dynamically-when-cargo-items-are-added-removed-or-repositioned-in-the-3d-container-view-maintain-consistent-numbering-order-within-each-layer-based-on-a-logical-sequence-e-g-left-to-right-front-to-back",
+      "title": "Ensure box numbering updates dynamically when cargo items are added, removed, or repositioned in the 3D container view. Maintain consistent numbering order within each layer based on a logical sequence (e.g., left-to-right, front-to-back).",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-investigate-and-fix-the-deployment-issue-causing-the-3d-container-view-and-numbered-boxes-not-to-display-correctly-in-version-5-check-for-runtime-errors-missing-dependencies-or-canvas-initialization-failures",
+      "title": "Investigate and fix the deployment issue causing the 3D container view and numbered boxes not to display correctly in Version 5. Check for runtime errors, missing dependencies, or Canvas initialization failures.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-comprehensive-error-logging-to-the-container3dview-component-to-capture-and-report-canvas-initialization-failures-webgl-context-errors-and-three-js-rendering-issues-that-may-occur-in-production",
+      "title": "Add comprehensive error logging to the Container3DView component to capture and report Canvas initialization failures, WebGL context errors, and Three.js rendering issues that may occur in production.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-loading-state-and-fallback-ui-to-container3dview-that-displays-while-the-3d-scene-initializes-preventing-users-from-seeing-a-blank-screen-during-canvas-setup",
+      "title": "Add a loading state and fallback UI to Container3DView that displays while the 3D scene initializes, preventing users from seeing a blank screen during Canvas setup.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-loadsummary-component-to-ensure-it-correctly-displays-load-statistics-volume-utilization-total-weight-item-counts-when-cargo-items-are-placed-in-the-container-verify-that-calculations-ts-utility-functions-are-being-called-with-the-correct-placed-items-data",
+      "title": "Debug and fix the LoadSummary component to ensure it correctly displays load statistics (volume utilization, total weight, item counts) when cargo items are placed in the container. Verify that calculations.ts utility functions are being called with the correct placed items data.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-debug-and-fix-the-container3dview-component-to-ensure-the-3d-canvas-renders-correctly-with-the-container-wireframe-and-placed-cargo-boxes-visible-verify-react-three-fiber-canvas-initialization-check-for-console-errors-and-ensure-cargobox3d-components-are-rendering-within-the-scene",
+      "title": "Debug and fix the Container3DView component to ensure the 3D canvas renders correctly with the container wireframe and placed cargo boxes visible. Verify React Three Fiber Canvas initialization, check for console errors, and ensure CargoBox3D components are rendering within the scene.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-defensive-null-checks-and-error-handling-in-app-tsx-to-ensure-selectedcontainer-cargoitems-and-placeditems-state-are-properly-initialized-and-passed-to-child-components-log-state-values-to-console-for-debugging-if-rendering-issues-persist",
+      "title": "Add defensive null checks and error handling in App.tsx to ensure selectedContainer, cargoItems, and placedItems state are properly initialized and passed to child components. Log state values to console for debugging if rendering issues persist.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-verify-that-the-layersummary-component-correctly-calculates-and-displays-layer-information-from-placed-cargo-items-ensure-layering-ts-utility-functions-properly-group-items-by-y-coordinate-and-generate-accurate-box-counts-per-layer",
+      "title": "Verify that the LayerSummary component correctly calculates and displays layer information from placed cargo items. Ensure layering.ts utility functions properly group items by Y-coordinate and generate accurate box counts per layer.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Container selection system (20ft, 40ft, 40ft HC, custom dimensions)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Basic 3D container visualization using Three.js",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Cargo item catalog with dimensions, weight, quantity, and stackability",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Load calculations (volume utilization, weight distribution, center of gravity)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Interactive cargo placement and arrangement in 3D view",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Automated packing suggestions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Save and load different packing scenarios",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Export loading plans to PDF",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Layer-wise box numbering in 3D view for easy counting",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Verify that all @react-three/fiber and @react-three/drei dependencies are correctly installed and bundled in the production build. Check for version compatibility issues between Three.js, React Three Fiber, and React Three Drei.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "status": "pending"
+    }
+  ],
+  "projectName": "Cargo Loading Planner",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

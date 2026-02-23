@@ -1,0 +1,89 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-23T18:29:04.288Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 4,
+    "implemented": 4,
+    "items": [
+      {
+        "id": "REQ-25",
+        "summary": "Debug and fix the LoadSummary component to ensure it correctly displays load statistics (volume utilization, total weight, item counts) when cargo items are placed in the container. Verify that calculations.ts utility functions are being called with the correct placed items data.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/LoadSummary.tsx",
+          "frontend/src/utils/calculations.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/LoadSummary.tsx",
+          "frontend/src/utils/calculations.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-26",
+        "summary": "Debug and fix the Container3DView component to ensure the 3D canvas renders correctly with the container wireframe and placed cargo boxes visible. Verify React Three Fiber Canvas initialization, check for console errors, and ensure CargoBox3D components are rendering within the scene.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/Container3DView.tsx",
+          "frontend/src/components/CargoBox3D.tsx",
+          "frontend/src/components/Canvas3DFallback.tsx",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/Container3DView.tsx",
+          "frontend/src/components/CargoBox3D.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-27",
+        "summary": "Add defensive null checks and error handling in App.tsx to ensure selectedContainer, cargoItems, and placedItems state are properly initialized and passed to child components. Log state values to console for debugging if rendering issues persist.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-28",
+        "summary": "Verify that the LayerSummary component correctly calculates and displays layer information from placed cargo items. Ensure layering.ts utility functions properly group items by Y-coordinate and generate accurate box counts per layer.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/LayerSummary.tsx",
+          "frontend/src/utils/layering.ts",
+          "frontend/src/components/Container3DView.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/LayerSummary.tsx",
+          "frontend/src/utils/layering.ts",
+          "frontend/src/components/Container3DView.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/App.tsx",
+    "frontend/src/components/CargoBox3D.tsx",
+    "frontend/src/components/Container3DView.tsx",
+    "frontend/src/components/LayerSummary.tsx",
+    "frontend/src/components/LoadSummary.tsx",
+    "frontend/src/utils/calculations.ts",
+    "frontend/src/utils/layering.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}
